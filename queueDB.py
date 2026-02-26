@@ -7,7 +7,7 @@ class queueDB:
         self.session = requests.Session()
         self.session.headers.update({"token": token})
 
-    def set_keys(self, data: dict) -> None:
+    def makeKeys(self, data: dict) -> None:
         r = self.session.post(f"{self.base_url}/v1/keys", json=data)
         if r.status_code != 204:
             try:
@@ -16,7 +16,7 @@ class queueDB:
                 err = {"message": r.text, "code": r.status_code}
             raise RuntimeError(f"{err.get('code')}: {err.get('message')}")
 
-    def get_keys(self, keys: list[str]) -> dict:
+    def getKeys(self, keys: list[str]) -> dict:
         r = self.session.get(f"{self.base_url}/v1/keys", json=keys)
         if r.status_code != 200:
             try:
@@ -26,9 +26,21 @@ class queueDB:
             raise RuntimeError(f"{err.get('code')}: {err.get('message')}")
         return r.json()
 
-    def set_key(self, key: str, value: Any) -> None:
-        self.set_keys({key: value})
+    def delKeys(self, keys: list[str]) -> None:
+        r = self.session.delete(f"{self.base_url}/v1/keys", json=keys)
+        if r.status_code != 204:
+            try:
+                err = r.json()
+            except Exception:
+                err = {"message": r.text, "code": r.status_code}
+            raise RuntimeError(f"{err.get('code')}: {err.get('message')}")
 
-    def get_key(self, key: str) -> Any:
-        res = self.get_keys([key])
+    def makeKey(self, key: str, value: Any) -> None:
+        self.makeKeys({key: value})
+
+    def getKey(self, key: str) -> Any:
+        res = self.getKeys([key])
         return res.get(key)
+
+    def delKey(self, key: str) -> None:
+        self.delKeys([key]
