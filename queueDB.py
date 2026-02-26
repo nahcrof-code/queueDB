@@ -43,4 +43,4 @@ class queueDB:
         return res.get(key)
 
     def delKey(self, key: str) -> None:
-        self.delKeys([key]
+        self.delKeys([key])
